@@ -109,15 +109,55 @@ FROM
     USING (drug_name)) AS sub
 GROUP BY drug_type
 
+
+
 -- $105080626.37 on opioids
 -- $38435121.26 on anibiotics
 
--- 5. a. How many CBSAs are in Tennessee? **Warning:** The cbsa table contains information for all states, not just Tennessee.
+-- 5. a. How many CBSAs are in Tennessee? **Warning:** The cbsa table contains information for all states, not just Tennessee. 
 
+SELECT COUNT (cbsa), cbsaname, population
+FROM cbsa
+INNER JOIN population
+USING (fipscounty)
+WHERE cbsaname LIKE '%TN%'
+GROUP BY cbsaname, population
+
+42
 
 --     b. Which cbsa has the largest combined population? Which has the smallest? Report the CBSA name and total population.
 
+SELECT cbsa, cbsaname, SUM(population) AS combined_population
+FROM cbsa
+INNER JOIN population
+USING (fipscounty)
+GROUP BY cbsa, cbsaname
+ORDER BY combined_population DESC
+
+-- Largest: Nashville-Davidson--Murfreesboro--Franklin, TN with population of 1830410
+-- Smallest: Morristown, TN with population of 116352
+
+
+
 --     c. What is the largest (in terms of population) county which is not included in a CBSA? Report the county name and population.
+
+
+
+SELECT cbsa, cbsaname, SUM(population) AS combined_population
+FROM cbsa
+INNER JOIN population
+USING (fipscounty)
+WHERE cbsaname LIKE 'NULL'
+GROUP BY cbsa, cbsaname
+ORDER BY combined_population DESC
+
+SELECT cbsa, cbsaname, population
+FROM cbsa
+INNER JOIN population
+USING (fipscounty)
+WHERE cbsaname LIKE '%TN%'
+ORDER BY population 
+
 
 -- 6. 
 --     a. Find all rows in the prescription table where total_claims is at least 3000. Report the drug_name and the total_claim_count.
